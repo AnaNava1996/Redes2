@@ -96,7 +96,7 @@ int main(int argc, char * argv[]){
 			semctl(idSem,8,SETVAL,0);
 			semctl(idSem,9,SETVAL,0);
 			semctl(idSem,10,SETVAL,0);
-			semctl(idSem,11,SETVAL,2);//el grandote de la derecha
+			semctl(idSem,11,SETVAL,0);//el grandote de la derecha
 			printf("\ninicia %d  %d  %d  %d  %d  %d  %d  %d  %d  %d  %d  %d",semctl(idSem,0,GETVAL,NULL),semctl(idSem,1,GETVAL,NULL),semctl(idSem,2,GETVAL,NULL),semctl(idSem,3,GETVAL,NULL),semctl(idSem,4,GETVAL,NULL),semctl(idSem,5,GETVAL,NULL),semctl(idSem,6,GETVAL,NULL),semctl(idSem,7,GETVAL,NULL),semctl(idSem,8,GETVAL,NULL),semctl(idSem,9,GETVAL,NULL),semctl(idSem,10,GETVAL,NULL),semctl(idSem,11,GETVAL,NULL));
 		}		
 	}
@@ -112,7 +112,7 @@ int main(int argc, char * argv[]){
 		semctl(idSem,8,SETVAL,0);
 		semctl(idSem,9,SETVAL,0);
 		semctl(idSem,10,SETVAL,0);
-		semctl(idSem,11,SETVAL,2);//el grandote de la derecha
+		semctl(idSem,11,SETVAL,0);//el grandote de la derecha
 		printf("\ninicia %d  %d  %d  %d  %d  %d  %d  %d  %d  %d  %d  %d",semctl(idSem,0,GETVAL,NULL),semctl(idSem,1,GETVAL,NULL),semctl(idSem,2,GETVAL,NULL),semctl(idSem,3,GETVAL,NULL),semctl(idSem,4,GETVAL,NULL),semctl(idSem,5,GETVAL,NULL),semctl(idSem,6,GETVAL,NULL),semctl(idSem,7,GETVAL,NULL),semctl(idSem,8,GETVAL,NULL),semctl(idSem,9,GETVAL,NULL),semctl(idSem,10,GETVAL,NULL),semctl(idSem,11,GETVAL,NULL));
 	}
 
@@ -123,23 +123,11 @@ int main(int argc, char * argv[]){
 	int prod=0,cons=0;
 	for(int i=0 ; i<numProductores ; i++){
 		pthread_create(&hilos[i], NULL, productor, (void *)&valors[i]);
-		/*if(prod==-1){
-			perror("\nError al crear los hilos productores");
-			matar_semaforos(ns);
-			exit(1);
-		}*/	
 	}
 
 
 	for(int i=0 ; i<numConsumidores ; i++){
 		pthread_create(&hilos[i+numProductores], NULL, consumidor, (void *)&valors[i]);
-		/*
-		if(cons==-1){
-			perror("\nError al crear los hilos consumidores");
-			matar_semaforos(ns);
-			exit(1);
-		}	
-		*/
 	}
 	
 
@@ -158,8 +146,8 @@ void * productor(void* argv){
 	
 	int cont=producciones;
 	while(cont!=0){//producciones en la sección crítica
-		cierre(0);
 		for(int i=0;i<5;i++){
+			cierre(0);
 			if(semctl(idSem,i+1,GETVAL,NULL)==1){
 				cierre(i+1);//cierro 1 a 5 Sem de productor	
 				pprintf("\nP%c    %d  %d  %d  %d  %d  %d  %d  %d  %d  %d  %d  %d",letra,semctl(idSem,0,GETVAL,NULL),semctl(idSem,1,GETVAL,NULL),semctl(idSem,2,GETVAL,NULL),semctl(idSem,3,GETVAL,NULL),semctl(idSem,4,GETVAL,NULL),semctl(idSem,5,GETVAL,NULL),semctl(idSem,6,GETVAL,NULL),semctl(idSem,7,GETVAL,NULL),semctl(idSem,8,GETVAL,NULL),semctl(idSem,9,GETVAL,NULL),semctl(idSem,10,GETVAL,NULL),semctl(idSem,11,GETVAL,NULL));						
@@ -170,11 +158,15 @@ void * productor(void* argv){
 				secCrit2[i][7]=letra;
 				cont=cont-1;
 				apertura(i+6);//abro 6 a 10 Sem de consumidor
+				apertura(11);
 				break;	
 			}
+			else{
+				apertura(0);
+			}
 		}
-		if(cont==0){	apertura(0);break;	}
-		apertura(0);
+		//if(cont==0){	apertura(0);break;	}
+		//apertura(0);
 	}
 	printf("\nSoy el productor%c y voy a salir...",letra);
 	pthread_exit(NULL);
@@ -184,8 +176,9 @@ void * consumidor(void * argv){// en el for de aqui no podemos saber cuanto va a
 	int * arg=(int*) argv;
 	char letra=(*arg+1)+'0';
 	while(consumosT!=0){
-		cierre(11);
+		printf("\n\tConsumosT=%d",consumosT);
 		for(int i=0;i<5;i++){
+			cierre(11);
 			if(semctl(idSem,i+6,GETVAL,NULL)==1){
 				cierre(i+6);//cierra de 6 a 10
 				printf("\nC%c    %d  %d  %d  %d  %d  %d  %d  %d  %d  %d  %d  %d",letra,semctl(idSem,0,GETVAL,NULL),semctl(idSem,1,GETVAL,NULL),semctl(idSem,2,GETVAL,NULL),semctl(idSem,3,GETVAL,NULL),semctl(idSem,4,GETVAL,NULL),semctl(idSem,5,GETVAL,NULL),semctl(idSem,6,GETVAL,NULL),semctl(idSem,7,GETVAL,NULL),semctl(idSem,8,GETVAL,NULL),semctl(idSem,9,GETVAL,NULL),semctl(idSem,10,GETVAL,NULL),semctl(idSem,11,GETVAL,NULL));
@@ -193,20 +186,18 @@ void * consumidor(void * argv){// en el for de aqui no podemos saber cuanto va a
 				printf("\nSoy el consumidor%c y leo: %c%c%c%c%c%c%c%c%c\n",letra,secCrit2[i][0],secCrit2[i][1],secCrit2[i][2],secCrit2[i][3],secCrit2[i][4],secCrit2[i][5],secCrit2[i][6],secCrit2[i][7],secCrit2[i][8]);
 				consumosT=consumosT-1;
 				apertura(i+1);//abre 1 a 5 sem de productor
+				apertura(0);
+				if(consumosT<numConsumidores){	pthread_exit(NULL);	}
 				break;
 			}
+			else{
+				apertura(11);
+			}
 		}
-		apertura(11);
 	}
 	printf("\nSoy el consumidor%c y voy a acabar...%d",letra,consumosT);
 	pthread_exit(NULL);
 }
-
-//	v de vacío
-//	l de lleno
-//	e de escribiendo
-//	r de leyendo
-
 
 
 //tarea buscar tipos de errores de semget
