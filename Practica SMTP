@@ -1,0 +1,6 @@
+configurar en alguna sub red el servidor de correo y que interactue con el DNS
+se va a contactar por el nombre no por la ip
+
+
+con algun servidor que ya esté en la infraestructura, hacer un pequeño script que vva a monitorear cuando llegue una petición dns
+el script va a enviar con correo que ya se está resolviendo algo?? y en el servidor se debe ver que llega un correo??

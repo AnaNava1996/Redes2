@@ -1,0 +1,16 @@
+---------------------------22/11/2018----------------------
+
+SMTP... las preguntas de siempre
+
+
+para el proyecto final y para que el servidor dhcp asigne la dirección dependiendo de la sub red, se le mete un comandito al router---> preguntarle a Polit.
+
+sudo system daemon reload
+
+
+
+
+
+
+
+

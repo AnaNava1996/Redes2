@@ -1,0 +1,163 @@
+Para asignar ip:
+1-entro a  la línea de comandos del router
+2- introduzco enable
+3- introduzco conf t
+4- int fast?
+5- int FastEthernet 1/0
+6- ip address 192.168.1.1 255.255.255.0
+   ip address 192.168.1.1 255.255.255.248 //es el 192.168.1.0
+   ip address 192.168.1.9 255.255.255.248 //es el 192.168.1.8
+7- no shutdown
+
+
+Para mostrar ips desde el router
+1- salir de config con ctrl Z
+2- show ip interface brief
+
+Para poner una interfaz: tap0 ---> nube?
+1-abro lal terminal de mi anfitrión
+2-sudo tunctl -t "nombre -u "usuario"
+  y si no sudo tunctl -u "usuario"---> tap0 por defecto
+3-sudo ifconfig tap0 up
+4-ifconfig... para probrar que ya aparezca la interfaz
+
+Asignar ip a una interfaz desde el anfitrión:
+  sudo ifconfig "tap0" 192.168.1.2  (así funcionó una vez)
+5-debo configurar también el anfitrión:
+  sudo ifconfig "entp0 o algo a sí..." 192.168.1.2  (así funcionó una vez)
+6-configurar la nubecita para que se conecte a la tap...
+  click derechosobre la nubecita, configure
+
+
+Comandos vpcs:
+ping 192.....
+show ip
+ip 192.168.0.5 255.255.255.0
+PC-1> ip 192.168.1.2 /29 192.168.1.1
+             ip           gateway
+
+
+------------------------¿Otras clases?-----------------------------
+Comandos route:
+show ip route
+show ip route 192.168.100.200
+
+sudo route add-net 192.168.1.0 gw  netwask 255.255.255.0 dev tap0
+
+el vato tuvo problemas con la nube
+
+sin gateway
+sudo route add-net 192.168.1.0  netwask 255.255.255.0 dev tap0
+
+ping 192.168.1.3 //es hacer ping a la tab??
+//que rayos es la tab?
+//cómo se configura
+//qué es ruteo rip?
+//el objetivo de hacer ruteo es comunicar subredes
+tarea: investigar que es particionamiento vlsm
+tarea: hacer broadcast de una subred a todas
+
+"route" sirve para hacer la tabla de ruteoo...
+comanos de cisco porque blabla
+
+iptables es para un firewall
+
+#router rip
+#network 192.168.
+#network 192.168.1.0
+#network 192.168.2.0
+#network 192.168.3.0
+#network 192.168.4.0
+
+//comando mostrar la tabla de ruteo
+#show ip route rip
+#show ip route
+//es un comando del router
+
+//modo enable
+#end
+
+//hay quienes no conocen a su gateway
+//los linux y elanfitrión?...
+//se les debe agregar
+PC-2> ip 192.168.4.2/24 192.168.4.1
+
+ping al gateway
+ping 192.168.4.1
+
+
+cambiar el gateway por default del anfitrión
+	sudo ip route flush default
+ver el cambio
+	route
+agregar
+	sudo route add defat gw 192.168.1.1 tap0
+	sudo route del -net 192.168.1.0 netmask 255.255.25.248 dev enp3s0f1
+
+
+----------------------------23/10/2018------------------------------
+Poner a transmitir el servidor broadcast:
+
+comando scp?????????????????
+este comando solo pide el origen y el destino
+poner este comando en la maquina virtual
+#scp zantana@192.168.1.2:/home/zantana/Escritorio/client_b.py
+si no funcion wtf... qué hago
+sudo scp client_b.py root@192.168.1.18:/home
+?????????????
+
+----------------------------24/10/2018------------------------------
+
+
+crear una interfaz virtual en la maquina virtual:
+	sudo lsmod | grep dummy
+	sudo modprobe dummy
+	sudo lsmod | grep dummy
+	
+	sudo ip link add dummy0 type dummy
+	sudo ip link set name eth10 dev dummy0
+	
+	si le doy a ifconfig aun no se ve
+	con ip link list siii
+	
+	sudo ip link set eth10 up
+	ifconfig y ya sale....
+
+----------------------------29/10/2018------------------------------
+
+mostrar tabla de ruteo:
+
+show ip route
+
+mostrar ips en el router:
+
+show ip interface brief
+
+
+----------------------------04/11/2018------------------------------
+
+GNS3 How to save your router configs
+https://www.youtube.com/watch?v=zfv-UIxTbew
+
+enable
+copy running-config startup-config
+Destination filename [startup-config]?
+
+enable
+sh start
+
+    difference between "copy run start" and wr
+They essentially achieve the same things by saving the running configuration to the memory so that after a reload it retains the same configuration. The write memory command, often shortened to just "wr" is the official way to do this.
+The "copy run start" command is just a variation of the "copy" command. The copy command can be used to copy any files in or out of the flash etc. - as opposed to just saving the configuration.
+I always suggest using "copy run start", as if you are in the wrong configuration register "wr" will lose your configuration after a reload/when you change the configuration register whereas "copy run start" will just copy the contents of the running configuration to the start-up configuration.
+
+R1
+/GNS3/projects/ejercicioBroadcast/project-files/dynamips/e2ceceb2-43ca-4116-aec3-439333fb3b2d/configs
+R2
+/GNS3/projects/ejercicioBroadcast/project-files/dynamips/39f4a7c2-da43-4038-93fe-02063dc54aa5/configs
+
+
+
+
+
+
