@@ -1,0 +1,4 @@
+Hacer un cliente y un servidor udp.
+El servidor debe atender a muchos clientes
+Cada vez que un cliente escriba "hola" va a recibir por parte del servidor algo, 
+la primera vez una imagen, la segunda vez un pdf
